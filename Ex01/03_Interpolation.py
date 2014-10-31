@@ -22,7 +22,7 @@ for N in range(1, 14, 4):
     plt.plot([L(list(grid), lambda t : 1/(1 + (10*t - 5)**2), x)
               for x in np.linspace(0, 1, 1000)])
     plt.plot([1/(1 + (10*x - 5)**2) for x in np.linspace(0, 1, 1000)])
-    plt.title("Degree " + str(N) + " lagrangian approximation vs Runge function")
+    plt.title("Degree "+ str(N) +" lagrangian approximation vs Runge function")
     plt.show()
 
 # Ex 3.6
@@ -42,26 +42,44 @@ for N in range(1, 14, 4):
 # Ex 3.7
 from scipy.optimize import minimize_scalar
 
-def LambdaMinList(q):
+def LambdaMaxList(q):
     """returns an approximation of the max of the Lambda function
-    and the point in which it is attained (using minize_scalar from scipy)"""
-    return [abs(minimize_scalar(lambda x : -Lambda(q,x),
-                               method='bounded', bounds=(0,1)).get("fun")),
-                minimize_scalar(lambda x : -Lambda(q,x),
-                               method='bounded', bounds=(0,1)).get("x")]
+    and the point in which it is attained, using minize_scalar from scipy
+    in each interval of the grid q"""
+    gridMax = [0, 0]
+    
+    for j in range(len(q)-1):
+        # we will use minimize_scalar looping on all intervals [q[j], q[j+1]]
+        start = q[j]
+        end = q[j+1]
+        midpoint = (q[j]+q[j+1])/2
+        
+        localMinInfo = minimize_scalar(
+            lambda x : -Lambda(q,x),
+            bracket = (start, midpoint, end))
+        
+        localMaxValue = abs(localMinInfo.get("fun"))       
+        if localMaxValue > gridMax[0]:
+            gridMax = [localMaxValue, localMinInfo.get("x")]
+            # at each step we check, and eventually update, where Lambda
+            # is maximum and the point in which the max is attained
+            
+    return gridMax
 
 # Ex 3.8
 def greedyStepMinimizeLambda(M, q):
-    """given a starting grid q of [0,1],
-    returns the M grid points obtained by adding points to q, and
-    at each addition requiring that new point is placed where
-    Lambda is maximum"""
+    """given a starting grid q of [0,1], returns the M grid points
+    obtained by adding points to q, at each addition requiring that
+    a new point is placed where Lambda is maximum"""
     for j in range(M):
-        q.append(LambdaMinList(q)[1])
-    plt.plot(q, [0 for i in range(len(q))] ,'ro')
-    plt.title("Smart step minimization for " + str(M) + " nodes")
-    plt.show()
+        q.append(LambdaMaxList(q)[1])
     return q
 
-greedyStepMinimizeLambda(35, [0, 0.5, 1])
+startGrid = [0, 0.5, 1]  # the starting grid of points
+NPoints = 15      # Number of points which will be added to the grid
+finalGrid = greedyStepMinimizeLambda(NPoints, startGrid)
+plt.plot(finalGrid, [0 for i in range(len(finalGrid))] ,'ro')
+plt.title("Greedy step minimization for "
+          + str(len(finalGrid)) + " nodes")
+plt.show()
 # As the graph shows, indeed the nodes tend to concetrate on the edges
