@@ -22,9 +22,9 @@ plt.loglog(FDErrorSinList10)
 FDSinList2 = [FD(np.sin, 1, 2**h) for h in range(-56,0)]
 FDErrorSinList2 = [abs(y - np.cos(1.0)) for y in FDSinList2]
 plt.loglog(FDErrorSinList2)
-# in this latter case we use base 2, which gives us a smaller minimum error and
-# slower convergence (but also divergence); this is mainly due to machine
-# representation of floating point numbers in base 2.
+# in this latter case we use base 2, which gives us a smaller minimum error;
+# this is mainly due to machine representation of floating point numbers
+# in base 2.
 
 plt.title("Finite differences of sin with grid 10^(-i) vs 2^(-i)")
 plt.show()
@@ -46,6 +46,14 @@ plt.loglog(CFDErrorSinList2)
 plt.title("Central finite differences of sin with grid 10^(-i) vs 2^(-i)")
 plt.show()
 
+# A quantitative evaluation of the error done with Finite differences vs
+# central finite differences can be obtained applying Taylor theorem;
+# in fact for finite differences one immediately sees (by definition) that
+# the error decreases as the first derivative of the function, while for
+# CFD (summing the taylor expansion with lagrange remainder to the 2nd order
+# for f(x+h) and f(x-h)) one obtains that the error decreases as the f''.
+
+
 ## Ex 1.7
 print("Machine eps: ", 3*(4./3 - 1) - 1)
 # This is a good approximation of machine precision for the following reason:
@@ -55,10 +63,10 @@ print("Machine eps: ", 3*(4./3 - 1) - 1)
 # the machine does), and subtracting 1 we obtain a number of the type
 #      0.0[b-1]0[b-1]0 ...
 # (but this time with only a finite number of digits).
-# Multiplying now by  b  we obtain
+# Multiplying now by  b+1  we obtain
 #      0.[b-1][b-1][b-1] ...
 # i.e. the closest number to 1 in machine representation;
-# therefore by subtracting 1 we get the smallest representable number.
+# therefore by subtracting 1 we get the smallest representable error.
 
 ## Ex 1.8
 import random
@@ -96,8 +104,8 @@ def kahan(list_):
 # it preserves in c the eventually small difference between y and s,
 # which would be otherwise cancelled due to machine precision
 
-# some examples for a list of 10^5 uniformly distributed numbers between [0,1]:
-l = getRandomList(100000)
+# some examples for a list of 10^6 uniformly distributed numbers between [0,1]:
+l = getRandomList(10**6)
 print("Stock sum: ", sum(l))
 print("Sorted stock sum: ", sum(sorted(l[:])))
 print("Reversed sorted stock sum: ", sum(l[::1]))
