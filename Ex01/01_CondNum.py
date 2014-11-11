@@ -55,7 +55,7 @@ plt.show()
 
 
 ## Ex 1.7
-print("Machine eps: ", 3*(4./3 - 1) - 1)
+print("Machine eps: ", abs(3*(4./3 - 1) - 1))
 # This is a good approximation of machine precision for the following reason:
 # in every base  b  the division algorithm gives the periodic number
 #       (b+2)/(b+1) = 1.0[b-1]0[b-1]0 ... .
@@ -107,8 +107,6 @@ def kahan(list_):
 # some examples for a list of 10^6 uniformly distributed numbers between [0,1]:
 l = getRandomList(10**6)
 print("Stock sum: ", sum(l))
-print("Sorted stock sum: ", sum(sorted(l[:])))
-print("Reversed sorted stock sum: ", sum(l[::1]))
 print("16bit sum: ", sumList16(l))
 print("32bit sum: ", sumList32(l))
 print("Sorted 32bit sum: ", sumList32(sorted(l[:])))
